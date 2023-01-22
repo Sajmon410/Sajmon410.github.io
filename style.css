@@ -7,7 +7,7 @@
 body
 {
 	font-family: sans-serif;
-	padding: 50px;
+	padding: 3%;
 	background-image: url("img/bg.jpg");
 	color:  #fff;
 	background-size: cover;
@@ -34,7 +34,7 @@ h2{
 	max-width: 650px;
 	margin: auto;
 	background-color: #2633a1;
-	padding: 50px;
+	padding: 10%;
 	border-radius: 50px;
 }
 .main-wrapper label{
