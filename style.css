@@ -131,11 +131,12 @@ form ul li{
 	/*rgba(15, 20, 63, 0.8);*/
 }
 .inner-container.right-side{
-	padding: 40px;
+	padding: 4%;
+	margin-bottom:12%;
 }
 .inner-container.left-side{
 	text-align: center;
-	padding: 40px;
+	padding: 12%;
 	
 }
 .inner-container img.profile{
