@@ -89,61 +89,43 @@ document.querySelector("#postForm").addEventListener("submit", (e) => {
 });
 
 async function getAllPosts() {
-    let all_posts = new Post();
-    let posts = await all_posts.getAllPosts();  // Ovaj poziv mora da vrati listu postova sa servera
+  let all_posts = new Post();
+  all_posts = await all_posts.getAllPosts();
 
-    // Proveri da li su postovi pravilno učitani
-    if (!posts || posts.length === 0) {
-        console.error("Nema postova!");
-        return;
+  all_posts.forEach((post) => {
+    async function getPostUser() {
+      let user = new User();
+      user = await user.get(post.user_id);
+
+      let delete_post_html = "";
+      let html = document.querySelector("#allPostsWrapper").innerHTML;
+      if (sesion_id === post.user_id) {
+        delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
+      }
+
+      document.querySelector("#allPostsWrapper").innerHTML =
+        `<div class="single-post" data_post_id="${post.id}">
+          <div class="post-actions">
+            <p><b>${user.username}</b></p>
+            <div>
+              <div class="post-content"><p class="postTekst">${post.content}</p></div>
+              <button onclick="likePost(this)" class="likePostJS like-btn"><span>${post.likes}</span></button>
+              <button class="comment-btn" onclick="commentPost(this)">0</button>
+              ${delete_post_html}
+            </div>
+          </div>
+          <div class="post-comments">
+            <form>
+              <input placeholder="Napiši komentar..." type="text">
+              <button class="comment" onclick="commentPostSubmit(event)">Komentariši</button>
+            </form>
+          </div>
+        </div>` + html;
     }
-
-    let response = await fetch(`${all_posts.api_url}/post_likes`);
-    if (!response.ok) {
-        console.error("Greška pri dobijanju podataka o lajkovima");
-        return;
-    }
-    let likes_data = await response.json();
-
-    posts.forEach(async (post) => {
-        let user = new User();
-        user = await user.get(post.user_id);
-
-        let isLiked = likes_data.some(
-            (like) => like.post_id === post.id && like.user_id === sesion_id
-        );
-
-        let delete_post_html = "";
-        if (sesion_id === post.user_id) {
-            delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
-        }
-
-        // Dodajemo postove u DOM
-        let postHTML = `
-            <div class="single-post" data_post_id="${post.id}">
-                <div class="post-actions">
-                    <p><b>${user.username}</b></p>
-                    <div>
-                        <div class="post-content"><p class="postTekst">${post.content}</p></div>
-                        <button onclick="likePost(this)" class="likePostJS like-btn" ${isLiked ? "disabled" : ""}>
-                            <span>${post.likes}</span>
-                        </button>
-                        <button class="comment-btn" onclick="commentPost(this)">0</button>
-                        ${delete_post_html}
-                    </div>
-                </div>
-                <div class="post-comments">
-                    <form>
-                        <input placeholder="Napiši komentar..." type="text">
-                        <button class="comment" onclick="commentPostSubmit(event)">Komentariši</button>
-                    </form>
-                </div>
-            </div>`;
-
-        // Ubacivanje HTML-a u postove
-        document.querySelector("#allPostsWrapper").innerHTML = postHTML + document.querySelector("#allPostsWrapper").innerHTML;
-    });
+    getPostUser();
+  });
 }
+
 getAllPosts();
 
 const commentPostSubmit = (e) => {
