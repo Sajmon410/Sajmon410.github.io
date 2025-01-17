@@ -97,6 +97,9 @@ async function getAllPosts() {
       let user = new User();
       user = await user.get(post.user_id);
 
+      // Učitaj broj komentara za post
+      let commentsCount = await getCommentsCount(post.id);
+
       let delete_post_html = "";
       let html = document.querySelector("#allPostsWrapper").innerHTML;
       if (sesion_id === post.user_id) {
@@ -110,7 +113,7 @@ async function getAllPosts() {
             <div>
               <div class="post-content"><p class="postTekst">${post.content}</p></div>
               <button onclick="likePost(this)" class="likePostJS like-btn"><span>${post.likes}</span></button>
-              <button class="comment-btn" onclick="commentPost(this)">0</button>
+              <button class="comment-btn" onclick="commentPost(this)">${commentsCount}</button>
               ${delete_post_html}
             </div>
           </div>
@@ -127,6 +130,13 @@ async function getAllPosts() {
 }
 
 getAllPosts();
+
+// Funkcija koja vraća broj komentara za post
+async function getCommentsCount(post_id) {
+  let comments = new Comment();
+  let allComments = await comments.getAllCommentsForPost(post_id);
+  return allComments.length;
+}
 
 const commentPostSubmit = (e) => {
   e.preventDefault();
@@ -147,6 +157,16 @@ const commentPostSubmit = (e) => {
   comment.user_id = sesion_id;
   comment.post_id = post_id;
   comment.create();
+
+  // Ažuriraj broj komentara nakon slanja
+  updateCommentCount(post_id);
+};
+
+const updateCommentCount = async (post_id) => {
+  let commentsCount = await getCommentsCount(post_id);
+  let postElement = document.querySelector(`.single-post[data_post_id="${post_id}"]`);
+  let commentBtn = postElement.querySelector(".comment-btn");
+  commentBtn.innerText = commentsCount;
 };
 
 const removeMyPost = (btn) => {
