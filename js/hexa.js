@@ -26,6 +26,7 @@ document.querySelector("#logout").addEventListener("click", (e) => {
 document.querySelector("#editAccount").addEventListener("click", () => {
   document.querySelector(".custom-modal").style.display = "block";
 });
+
 document.querySelector("#closeModal").addEventListener("click", () => {
   document.querySelector(".custom-modal").style.display = "none";
 });
@@ -66,6 +67,7 @@ document.querySelector("#postForm").addEventListener("submit", (e) => {
       delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
     }
 
+    // Inicijalizuj post
     document.querySelector("#allPostsWrapper").innerHTML =
       `<div class="single-post" data_post_id="${post.id}">
         <div class="post-actions">
@@ -82,6 +84,7 @@ document.querySelector("#postForm").addEventListener("submit", (e) => {
             <input placeholder="Napiši komentar..." type="text">
             <button class="comment" onclick="commentPostSubmit(event)">Comment</button>
           </form>
+          <div class="comments-list"></div> <!-- Div za prikaz komentara -->
         </div>
       </div>` + html;
   }
@@ -97,12 +100,17 @@ async function getAllPosts() {
       let user = new User();
       user = await user.get(post.user_id);
 
+      // Učitaj broj komentara za svaki post
+      let comments = await getCommentsForPost(post.id); // Pretpostavljam da postoji metoda za uzimanje komentara
+      let commentCount = comments.length;
+
       let delete_post_html = "";
       let html = document.querySelector("#allPostsWrapper").innerHTML;
       if (sesion_id === post.user_id) {
         delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
       }
 
+      // Prikazivanje postova sa brojem komentara
       document.querySelector("#allPostsWrapper").innerHTML =
         `<div class="single-post" data_post_id="${post.id}">
           <div class="post-actions">
@@ -110,7 +118,7 @@ async function getAllPosts() {
             <div>
               <div class="post-content"><p class="postTekst">${post.content}</p></div>
               <button onclick="likePost(this)" class="likePostJS like-btn"><span>${post.likes}</span></button>
-              <button class="comment-btn" onclick="commentPost(this)">0</button>
+              <button class="comment-btn" onclick="commentPost(this)">${commentCount}</button>
               ${delete_post_html}
             </div>
           </div>
@@ -119,15 +127,39 @@ async function getAllPosts() {
               <input placeholder="Napiši komentar..." type="text">
               <button class="comment" onclick="commentPostSubmit(event)">Komentariši</button>
             </form>
+            <div class="comments-list"></div> <!-- Div za prikaz komentara -->
           </div>
         </div>` + html;
+
+      // Prikazivanje komentara za post
+      displayComments(post.id);
     }
     getPostUser();
   });
 }
 
-getAllPosts();
+async function getCommentsForPost(post_id) {
+  // Pretpostavljam da postoji metod za dobijanje komentara za post
+  let comments = new Comment();
+  comments = await comments.getByPostId(post_id); // Pretpostavljam da postoji metod getByPostId
+  return comments;
+}
 
+// Funkcija za prikazivanje komentara za post
+async function displayComments(post_id) {
+  let commentsList = document.querySelector(`[data_post_id="${post_id}"] .comments-list`);
+  let comments = await getCommentsForPost(post_id);
+  
+  commentsList.innerHTML = ""; // Očisti prethodne komentare
+  comments.forEach(comment => {
+    let commentDiv = document.createElement('div');
+    commentDiv.classList.add('single-comment');
+    commentDiv.innerText = comment.content;
+    commentsList.appendChild(commentDiv);
+  });
+}
+
+// Funkcija za dodavanje komentara
 const commentPostSubmit = (e) => {
   e.preventDefault();
   let btn = e.target;
@@ -137,16 +169,26 @@ const commentPostSubmit = (e) => {
   let post_id = main_post_el.getAttribute("data_post_id");
 
   let comment_value = main_post_el.querySelector("input").value;
-
   main_post_el.querySelector("input").value = " ";
 
-  main_post_el.querySelector(".post-comments").innerHTML += `<div class="single-comment">${comment_value}</div>`;
-
+  // Kreiraj novi komentar u bazi
   let comment = new Comment();
   comment.content = comment_value;
   comment.user_id = sesion_id;
   comment.post_id = post_id;
   comment.create();
+
+  // Dodaj komentar na stranicu bez ponovnog učitavanja
+  let commentsList = main_post_el.querySelector(".comments-list");
+  let commentDiv = document.createElement('div');
+  commentDiv.classList.add('single-comment');
+  commentDiv.innerText = comment_value;
+  commentsList.appendChild(commentDiv);
+
+  // Ažuriraj broj komentara na dugmetu
+  let commentBtn = main_post_el.querySelector(".comment-btn");
+  let currentCount = parseInt(commentBtn.innerText);
+  commentBtn.innerText = currentCount + 1;
 };
 
 const removeMyPost = (btn) => {
@@ -175,3 +217,5 @@ const commentPost = (btn) => {
   let post_comments_el = main_post_el.querySelector(".post-comments");
   post_comments_el.style.display = post_comments_el.style.display === "block" ? "none" : "block";
 };
+
+getAllPosts(); // Učitaj sve postove sa komentarima
