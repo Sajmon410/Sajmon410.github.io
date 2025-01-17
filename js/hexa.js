@@ -90,9 +90,19 @@ document.querySelector("#postForm").addEventListener("submit", (e) => {
 
 async function getAllPosts() {
     let all_posts = new Post();
-    let posts = await all_posts.getAllPosts();
+    let posts = await all_posts.getAllPosts();  // Ovaj poziv mora da vrati listu postova sa servera
+
+    // Proveri da li su postovi pravilno učitani
+    if (!posts || posts.length === 0) {
+        console.error("Nema postova!");
+        return;
+    }
 
     let response = await fetch(`${all_posts.api_url}/post_likes`);
+    if (!response.ok) {
+        console.error("Greška pri dobijanju podataka o lajkovima");
+        return;
+    }
     let likes_data = await response.json();
 
     posts.forEach(async (post) => {
@@ -108,9 +118,9 @@ async function getAllPosts() {
             delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
         }
 
-        let html = document.querySelector("#allPostsWrapper").innerHTML;
-        document.querySelector("#allPostsWrapper").innerHTML =
-            `<div class="single-post" data_post_id="${post.id}">
+        // Dodajemo postove u DOM
+        let postHTML = `
+            <div class="single-post" data_post_id="${post.id}">
                 <div class="post-actions">
                     <p><b>${user.username}</b></p>
                     <div>
@@ -128,7 +138,10 @@ async function getAllPosts() {
                         <button class="comment" onclick="commentPostSubmit(event)">Komentariši</button>
                     </form>
                 </div>
-            </div>` + html;
+            </div>`;
+
+        // Ubacivanje HTML-a u postove
+        document.querySelector("#allPostsWrapper").innerHTML = postHTML + document.querySelector("#allPostsWrapper").innerHTML;
     });
 }
 getAllPosts();
