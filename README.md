@@ -1,4 +1,4 @@
-# SajmoNet
+# SajmoNet http://localhost:8000/hexa.html
 SocialNetwork in JavaScript (using mockapi)<br>
 A social network that consists of a home page where you log in/register as well as a post page<br><br>
 ![ss1](https://user-images.githubusercontent.com/120813343/213603308-4fe35f67-5f7c-46b3-b650-b18157ae6434.PNG)<br><br>
