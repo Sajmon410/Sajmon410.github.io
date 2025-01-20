@@ -138,7 +138,9 @@ async function getAllPosts() {
                 <div class="post-comments">
                     <form>
                         <input placeholder="Napiši komentar..." type="text">
-                        <button class="comment" onclick="commentPostSubmit(event)"></button>
+                        <button class="comment" onclick="commentPostSubmit(event)">
+                            <img src="../img/message.png" alt="Comment" class="comment-icon">
+                        </button>
                     </form>
                     ${comments_html}
                 </div>
