@@ -301,3 +301,13 @@ textarea{
 	object-fit: contain;
 	vertical-align: middle;
 }
+@media screen and (max-width: 992px) {
+    #email{
+		font-size: 10px !important;
+	}
+}
+@media screen and (max-width: 768px) {
+    #email{
+		font-size: 20px !important;
+	}
+}
