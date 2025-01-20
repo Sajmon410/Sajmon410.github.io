@@ -83,7 +83,7 @@ document.querySelector("#postForm").addEventListener("submit", e => {
             </div>
             <div class="post-comments">
                 <form>
-                    <input placeholder="Napiši komentar..." type="text">
+                    <input placeholder="Napiši komentar..." type="text" pattern="[A-Za-z]*">
                     <button class="comment" onclick="commentPostSubmit(event)">
                         <img src="../img/message.png" alt="Comment" class="comment-icon">
                     </button>
@@ -137,7 +137,7 @@ async function getAllPosts() {
                 </div>
                 <div class="post-comments">
                     <form>
-                        <input placeholder="Napiši komentar..." type="text">
+                        <input placeholder="Napiši komentar..." type="text" pattern="[A-Za-z]*">
                         <button class="comment" onclick="commentPostSubmit(event)">
                             <img src="../img/message.png" alt="Comment" class="comment-icon">
                         </button>
