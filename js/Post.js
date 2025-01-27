@@ -52,23 +52,22 @@ class Post {
             await fetch(this.api_url + '/posts/' + post_id, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: data,
             });
-            alert("Post lajkovan");
+
+            return { success: true };
         } else {
-            alert("Već ste lajkovali ovaj post!");
+            return { success: false, message: "Već ste lajkovali ovaj post!" };
         }
     }
 
-    delete(post_id) {
-        fetch(this.api_url + '/posts/' + post_id, {
+    async delete(post_id) {
+        let response = await fetch(this.api_url + '/posts/' + post_id, {
             method: 'DELETE',
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert("Post je obrisan");
-            });
+        });
+
+        return response;
     }
 }

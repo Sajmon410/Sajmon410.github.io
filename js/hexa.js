@@ -125,12 +125,15 @@ async function getAllPosts() {
             if (sesion_id === post.user_id) {
                 delete_post_html = `<button class="remove-btn" onclick="removeMyPost(this)"></button>`;
             }
+
+            let like_disabled = post.likedBy.includes(sesion_id) ? "disabled" : "";
+
             document.querySelector("#allPostsWrapper").innerHTML = `<div class="single-post" data_post_id="${post.id}">
                 <div class="post-actions">
                     <p><b>${user.username}</b></p>
                     <div>
                         <div class="post-content"><p class="postTekst">${post.content}</p></div> 
-                        <button class="likePostJS like-btn"><span>${post.likes}</span></button>
+                        <button class="likePostJS like-btn" ${like_disabled}><span>${post.likes}</span></button>
                         <button class="comment-btn" onclick="commentPost(this)">${comments.length}</button>
                         ${delete_post_html}
                     </div>
@@ -190,23 +193,37 @@ const removeMyPost = btn => {
     post.delete(post_id);
 };
 
-const likePost = async btn => {
+const likePost = async (btn) => {
     let main_post_el = btn.closest(".single-post");
     let post_id = main_post_el.getAttribute("data_post_id");
     let number_of_likes = parseInt(btn.querySelector("span").innerText);
 
     let post = new Post();
-    let response = await post.like(post_id, sesion_id); // Assuming this returns a response indicating success/failure
+    let response = await fetch(post.api_url + '/posts/' + post_id);
+    let post_data = await response.json();
 
-    if (response.success) {
-        // Only update the like count if the backend confirms success
-        btn.querySelector("span").innerText = number_of_likes + 1;
-        btn.setAttribute("disabled", 'true');
-    } else {
-        alert("You have already liked this post.");
+    if (post_data.likedBy.includes(sesion_id)) {
+        alert("Već ste lajkovali ovaj post!");
+        return;
+    }
+
+    btn.querySelector("span").innerText = number_of_likes + 1;
+    btn.setAttribute("disabled", "true");
+
+    try {
+        const result = await post.like(post_id, sesion_id);
+
+        if (!result.success) {
+            btn.querySelector("span").innerText = number_of_likes;
+            btn.removeAttribute("disabled");
+            alert(result.message);
+        }
+    } catch (error) {
+        // btn.querySelector("span").innerText = number_of_likes;
+        // btn.removeAttribute("disabled");
+        // alert("Greška prilikom lajkovanja. Pokušajte ponovo.");
     }
 };
-
 const commentPost = btn => {
     let main_post_el = btn.closest('.single-post');
     let post_id = main_post_el.getAttribute("data_post_id");
