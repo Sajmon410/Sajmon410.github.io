@@ -196,11 +196,15 @@ const likePost = async btn => {
     let number_of_likes = parseInt(btn.querySelector("span").innerText);
 
     let post = new Post();
-    await post.like(post_id, sesion_id);
+    let response = await post.like(post_id, sesion_id); // Assuming this returns a response indicating success/failure
 
-    // Osvežavanje broja lajkova nakon što je uspešno lajkovano
-    btn.querySelector("span").innerText = number_of_likes + 1;
-    btn.setAttribute("disabled", 'true');
+    if (response.success) {
+        // Only update the like count if the backend confirms success
+        btn.querySelector("span").innerText = number_of_likes + 1;
+        btn.setAttribute("disabled", 'true');
+    } else {
+        alert("You have already liked this post.");
+    }
 };
 
 const commentPost = btn => {
