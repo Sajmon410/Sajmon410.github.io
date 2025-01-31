@@ -177,6 +177,10 @@ const commentPostSubmit = e => {
 
     main_post_el.querySelector(".post-comments").innerHTML += `<div class="single-comment">${comment_value}</div>`;
 
+    let commentCounter = main_post_el.querySelector(".comment-btn");
+    let currentCount = parseInt(commentCounter.innerText);
+    commentCounter.innerText = currentCount + 1;
+
     let comment = new Comment();
     comment.content = comment_value;
     comment.user_id = sesion_id;
