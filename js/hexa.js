@@ -115,9 +115,12 @@ async function getAllPosts() {
             comments = await comments.get(post.id);
             let comments_html = '';
             if (comments.length > 0) {
-                comments.forEach(comment => {
-                    comments_html += `<div class="single-comment">${comment.content}</div>`;
-                });
+                comments_html = await Promise.all(comments.map(async comment => {
+                    let comment_user = new User();
+                    comment_user = await comment_user.get(comment.user_id);
+                
+                    return `<div class="single-comment"><b>${comment_user.username}:</b> ${comment.content}</div>`;
+                })).then(htmlArray => htmlArray.join(''));
             }
 
             let delete_post_html = "";
@@ -163,7 +166,7 @@ async function getAllPosts() {
 
 getAllPosts();
 
-const commentPostSubmit = e => {
+const commentPostSubmit = async e => {
     e.preventDefault();
     let btn = e.target;
     btn.setAttribute("disabled", 'true');
@@ -175,7 +178,10 @@ const commentPostSubmit = e => {
 
     main_post_el.querySelector("input").value = "";
 
-    main_post_el.querySelector(".post-comments").innerHTML += `<div class="single-comment">${comment_value}</div>`;
+    let current_user = new User();
+    current_user = await current_user.get(sesion_id);
+    
+    main_post_el.querySelector(".post-comments").innerHTML += `<div class="single-comment"><b>${current_user.username}:</b> ${comment_value}</div>`;
 
     let commentCounter = main_post_el.querySelector(".comment-btn");
     let currentCount = parseInt(commentCounter.innerText);
