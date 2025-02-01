@@ -318,3 +318,20 @@ textarea{
 	}
 }
 
+@media screen and (max-width: 800px) {
+    .main-wrapper{
+		max-width: 500px !important;
+	}
+}
+@media screen and (max-width: 600px) {
+    .main-wrapper{
+		max-width: 400px !important;
+		padding: 10% !important;
+	}
+}
+@media screen and (max-width: 500px) {
+    .main-wrapper{
+		max-width: 300px !important;
+	}
+}
+
