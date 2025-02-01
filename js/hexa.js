@@ -245,7 +245,3 @@ const commentPost = btn => {
         komentar = true;
     }
 };
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM loaded ");
-    getAllPosts();
-});
