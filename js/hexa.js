@@ -152,7 +152,6 @@ async function getAllPosts() {
                 </div>
             </div>` + html;
 
-            // Dodavanje event listener-a za novo dugme like
             document.querySelectorAll('.likePostJS').forEach(btn => {
                 btn.addEventListener("click", function() {
                     likePost(this);

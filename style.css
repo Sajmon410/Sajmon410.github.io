@@ -280,13 +280,8 @@ textarea{
 	background-color: #2633a1;
 	color: whitesmoke;
 	font-size: 20px;
-	maring: auto;
 	padding: 10px 15px;
 	border: 1px solid #2633a1;
-}
-.comment{
-	maring: 0;
-
 }
 .postTekst{
 	margin-top: 20px;
